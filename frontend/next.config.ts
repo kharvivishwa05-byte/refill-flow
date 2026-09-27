@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
     maxInactiveAge: 60 * 1000,
     pagesBufferLength: 5,
   },
+  // Disable static favicon prerendering
+  experimental: {
+    optimizePackageImports: ["@vercel/og"],
+  },
 };
 
 export default nextConfig;
