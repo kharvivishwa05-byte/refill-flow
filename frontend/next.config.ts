@@ -1,11 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Disable immutable static file upload to avoid Vercel preview comment patch issue
-  experimental: {
-    staticGenerationRetryCount: 0,
+  // Mark API routes as dynamic to prevent build-time data fetching
+  onDemandEntries: {
+    maxInactiveAge: 60 * 1000,
+    pagesBufferLength: 5,
   },
-  outputFileTracingIncludes: {},
 };
 
 export default nextConfig;

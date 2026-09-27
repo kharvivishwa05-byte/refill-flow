@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
     createRefillCase,
     getCases,
@@ -32,7 +32,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Failed to load cases:", error);
       setError(
-        "Unable to connect to the backend on port 8000. Start the FastAPI server and refresh this page."
+        "Unable to connect to the backend. Make sure it's running."
       );
     } finally {
       setLoading(false);
@@ -199,7 +199,7 @@ export default function Dashboard() {
             </div>
             <Link
               href="/prescription-assistant"
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-400/20 transition hover:bg-cyan-300 hover:scale-[1.02]"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-cyan-400/20 transition hover:bg-cyan-300"
             >
               Open AI Prescription Assistant →
             </Link>
@@ -254,7 +254,7 @@ export default function Dashboard() {
                   onChange={(e) =>
                     setPharmacyMessage(e.target.value)
                   }
-                  className="w-full resize-none rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-4 focus:ring-cyan-400/5"
+                  className="w-full resize-none rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-4 focus:ring-cyan-400/10"
                 />
               </div>
             </div>
@@ -270,7 +270,7 @@ export default function Dashboard() {
                 type="button"
                 onClick={createCase}
                 disabled={creating}
-                className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition duration-300 hover:-translate-y-0.5 hover:shadow-blue-600/30 disabled:cursor-not-allowed disabled:opacity-50"
+                className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:shadow-lg hover:shadow-blue-500/40 disabled:opacity-50"
               >
                 <span className="relative z-10">
                   {creating
@@ -345,7 +345,7 @@ export default function Dashboard() {
                     animationDelay: `${index * 60}ms`,
                   }}
                 >
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 transition duration-300 hover:-translate-y-1 hover:border-cyan-400/20 hover:bg-white/[0.06] hover:shadow-xl hover:shadow-black/20 lg:p-6">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 transition duration-300 hover:-translate-y-1 hover:border-cyan-400/20 hover:bg-white/[0.06] hover:shadow-xl hover:shadow-cyan-500/10">
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                       <div className="flex items-start gap-4">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-sm font-bold text-blue-400">
@@ -481,7 +481,7 @@ function InputField({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-4 focus:ring-cyan-400/5"
+        className="w-full rounded-xl border border-white/10 bg-slate-900/70 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400/50 focus:ring-4 focus:ring-cyan-400/10"
       />
     </div>
   );
