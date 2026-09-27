@@ -1,10 +1,5 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  // Disable immutable static file upload to resolve Vercel deployment conflicts
-  experimental: {
-    disableStaticImages: false,
-  },
-};
+const nextConfig: NextConfig = {};
 
 export default nextConfig;
