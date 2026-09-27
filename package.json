@@ -1,1 +1,8 @@
-
+{
+  "name": "refill-flow",
+  "private": true,
+  "scripts": {
+    "install-frontend": "cd frontend && npm install",
+    "build": "cd frontend && npm run build"
+  }
+}
