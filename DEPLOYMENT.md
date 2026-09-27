@@ -1,28 +1,59 @@
-# Vercel Deployment
+# Single-project Vercel deployment
 
-The application deploys as two Vercel projects:
+This repo is now structured around a single Vercel project and same-origin API calls.
 
-1. **Frontend**: create a Vercel project from this repository and set its Root Directory to `frontend`.
-2. **Backend**: create a second Vercel project from the same repository and set its Root Directory to `backend`.
+## Deployment model
 
-## Frontend environment variable
+- Frontend domain: `https://<single-vercel-domain>/`
+- API endpoints: `https://<single-vercel-domain>/api/*`
+- Frontend code must call the backend through relative URLs like `/api/cases`.
+- Do not hardcode external backend domains like `https://backend-gray-one-39.vercel.app`.
 
-In the frontend Vercel project, set:
+## Required Vercel configuration
 
-```text
-NEXT_PUBLIC_API_BASE_URL=https://<backend-project>.vercel.app
+Set the Vercel project root to the `frontend` directory and keep the app as a normal Next.js app.
+
+The frontend app proxies `/api/*` requests to your FastAPI backend using the `BACKEND_URL` environment variable when running locally or while you keep a separate Python service temporarily.
+
+Example:
+
+```bash
+BACKEND_URL=http://localhost:8000
 ```
 
-## Backend environment variables
+On a pure single-project deployment, the browser continues to call:
 
-In the backend Vercel project, set:
-
-```text
-FRONTEND_ORIGIN=https://<frontend-project>.vercel.app
+```ts
+fetch("/api/cases")
 ```
 
-Add `GROQ_API_KEY` and `GROQ_MODEL` if hosted AI analysis is required.
+and the app routes the request to the backend via the Next.js API route handler.
 
-## Important persistence note
+## What changed
 
-The current backend uses local SQLite and stores uploaded prescription files on disk. Vercel functions have ephemeral storage, so those records and files are suitable for a demo but are not durable production storage. For production, move the database to Postgres and uploaded files to object storage such as Vercel Blob or S3-compatible storage.
+- Frontend service calls now target same-origin `/api/...` paths.
+- `frontend/src/app/api/[...slug]/route.ts` proxies requests to the FastAPI backend.
+- `frontend/.env.example` uses `BACKEND_URL` instead of a public backend domain.
+
+## Local development
+
+Start the FastAPI backend:
+
+```bash
+cd backend
+python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Then start the frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend can call the backend through:
+
+```text
+http://localhost:3000/api/cases
+```

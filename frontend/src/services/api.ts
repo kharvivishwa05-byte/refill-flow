@@ -1,11 +1,12 @@
-const API_BASE_URL = (
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://backend-gray-one-39.vercel.app"
-).replace(/\/$/, "");
+const API_BASE_URL = "/api";
 
-
+function buildApiUrl(path: string) {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${API_BASE_URL}${normalizedPath}`;
+}
 
 export async function getCases() {
-  const response = await fetch(`${API_BASE_URL}/cases`);
+  const response = await fetch(buildApiUrl("/cases"));
   if (!response.ok) {
     throw new Error("Unable to load refill cases");
   }
@@ -13,7 +14,7 @@ export async function getCases() {
 }
 
 export async function getCase(caseId: string) {
-  const response = await fetch(`${API_BASE_URL}/cases/${caseId}`);
+  const response = await fetch(buildApiUrl(`/cases/${caseId}`));
   if (!response.ok) {
     throw new Error("Unable to load refill case");
   }
@@ -21,7 +22,7 @@ export async function getCase(caseId: string) {
 }
 
 export async function getAudit(caseId: string) {
-  const response = await fetch(`${API_BASE_URL}/audit/${caseId}`);
+  const response = await fetch(buildApiUrl(`/audit/${caseId}`));
   if (!response.ok) {
     throw new Error("Unable to load audit timeline");
   }
@@ -29,7 +30,7 @@ export async function getAudit(caseId: string) {
 }
 
 export async function approveCase(caseId: string) {
-  const response = await fetch(`${API_BASE_URL}/approve/${caseId}`, {
+  const response = await fetch(buildApiUrl(`/approve/${caseId}`), {
     method: "POST",
   });
   const data = await response.json();
@@ -40,7 +41,7 @@ export async function approveCase(caseId: string) {
 }
 
 export async function confirmPharmacy(caseId: string) {
-  const response = await fetch(`${API_BASE_URL}/confirm-pharmacy/${caseId}`, {
+  const response = await fetch(buildApiUrl(`/confirm-pharmacy/${caseId}`), {
     method: "POST",
   });
   const data = await response.json();
@@ -55,7 +56,7 @@ export async function createRefillCase(payload: {
   medication: string;
   pharmacy_message: string;
 }) {
-  const response = await fetch(`${API_BASE_URL}/refill-request`, {
+  const response = await fetch(buildApiUrl("/refill-request"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -79,7 +80,7 @@ export async function uploadPrescriptions(files: File[]) {
     formData.append("files", file);
   });
 
-  const response = await fetch(`${API_BASE_URL}/prescription/upload`, {
+  const response = await fetch(buildApiUrl("/prescription/upload"), {
     method: "POST",
     body: formData,
   });
@@ -92,7 +93,7 @@ export async function uploadPrescriptions(files: File[]) {
 }
 
 export async function loadSamplePrescription(sampleType: string) {
-  const response = await fetch(`${API_BASE_URL}/prescription/sample-load/${sampleType}`, {
+  const response = await fetch(buildApiUrl(`/prescription/sample-load/${sampleType}`), {
     method: "POST",
   });
   const data = await response.json();
@@ -103,7 +104,7 @@ export async function loadSamplePrescription(sampleType: string) {
 }
 
 export async function getExtractions() {
-  const response = await fetch(`${API_BASE_URL}/prescription/extractions`);
+  const response = await fetch(buildApiUrl("/prescription/extractions"));
   if (!response.ok) {
     throw new Error("Unable to fetch prescription extractions");
   }
@@ -111,7 +112,7 @@ export async function getExtractions() {
 }
 
 export async function getExtraction(extractionId: string) {
-  const response = await fetch(`${API_BASE_URL}/prescription/extractions/${extractionId}`);
+  const response = await fetch(buildApiUrl(`/prescription/extractions/${extractionId}`));
   if (!response.ok) {
     throw new Error("Unable to fetch prescription extraction details");
   }
@@ -119,7 +120,7 @@ export async function getExtraction(extractionId: string) {
 }
 
 export async function verifyExtraction(extractionId: string, payload: any) {
-  const response = await fetch(`${API_BASE_URL}/prescription/verify/${extractionId}`, {
+  const response = await fetch(buildApiUrl(`/prescription/verify/${extractionId}`), {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -134,7 +135,7 @@ export async function verifyExtraction(extractionId: string, payload: any) {
 }
 
 export async function createCaseFromExtraction(extractionId: string) {
-  const response = await fetch(`${API_BASE_URL}/prescription/create-case/${extractionId}`, {
+  const response = await fetch(buildApiUrl(`/prescription/create-case/${extractionId}`), {
     method: "POST",
   });
   const data = await response.json();
@@ -145,5 +146,5 @@ export async function createCaseFromExtraction(extractionId: string) {
 }
 
 export function getExtractionDocxUrl(extractionId: string) {
-  return `${API_BASE_URL}/prescription/extractions/${extractionId}/docx`;
+  return buildApiUrl(`/prescription/extractions/${extractionId}/docx`);
 }
