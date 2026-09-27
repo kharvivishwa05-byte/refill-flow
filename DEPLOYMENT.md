@@ -1,50 +1,57 @@
-# Single-project Vercel deployment
+# RefillFlow: one Vercel project
 
-This repo is now structured around a single Vercel project and same-origin API calls.
+The repository is deployed as one Vercel project from the repository root.
 
-## Deployment model
+## Vercel project settings
 
-- Frontend domain: `https://<single-vercel-domain>/`
-- API endpoints: `https://<single-vercel-domain>/api/*`
-- Frontend code must call the backend through relative URLs like `/api/cases`.
-- Do not hardcode external backend domains like `https://backend-gray-one-39.vercel.app`.
+- **Root Directory:** leave empty / repository root
+- **Framework Preset:** Other (the committed `vercel.json` selects the builds)
+- **Build command:** configured by `@vercel/next` from `frontend/package.json`
+- **Install command:** `npm install` in `frontend` is handled by the Next build; Python dependencies come from the root `requirements.txt`
 
-## Required Vercel configuration
+Do not create a separate frontend or backend Vercel project.
 
-Set the Vercel project root to the `frontend` directory and keep the app as a normal Next.js app.
+## Runtime routing
 
-The frontend app proxies `/api/*` requests to your FastAPI backend using the `BACKEND_URL` environment variable when running locally or while you keep a separate Python service temporarily.
+`vercel.json` builds both applications in the same project:
 
-Example:
+- `frontend/package.json` is built with `@vercel/next`
+- `api/index.py` is built with `@vercel/python`
+- `/api/*` is routed to the FastAPI serverless function
+- all other paths are routed to the Next.js application
 
-```bash
-BACKEND_URL=http://localhost:8000
+The root `api/index.py` imports the existing backend from `backend/` and strips the public `/api` prefix before FastAPI handles the request. Existing backend routes therefore remain unchanged:
+
+```text
+/api/cases                         -> FastAPI /cases
+/api/approve/RF-001                -> FastAPI /approve/RF-001
+/api/prescription/extractions      -> FastAPI /prescription/extractions
 ```
 
-On a pure single-project deployment, the browser continues to call:
+The browser only uses same-origin URLs such as `/api/cases`.
 
-```ts
-fetch("/api/cases")
+## Environment variables
+
+Set these in the single Vercel project as needed:
+
+```text
+GROQ_API_KEY=...
+GROQ_MODEL=...
+DATABASE_URL=...
 ```
 
-and the app routes the request to the backend via the Next.js API route handler.
-
-## What changed
-
-- Frontend service calls now target same-origin `/api/...` paths.
-- `frontend/src/app/api/[...slug]/route.ts` proxies requests to the FastAPI backend.
-- `frontend/.env.example` uses `BACKEND_URL` instead of a public backend domain.
+`FRONTEND_ORIGIN` and `NEXT_PUBLIC_API_BASE_URL` are not required for production same-origin requests. The backend CORS middleware may remain for local standalone backend development.
 
 ## Local development
 
-Start the FastAPI backend:
+Run the backend separately for local development:
 
 ```bash
 cd backend
 python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Then start the frontend:
+In another terminal:
 
 ```bash
 cd frontend
@@ -52,8 +59,8 @@ npm install
 npm run dev
 ```
 
-The frontend can call the backend through:
+The committed Next.js proxy route uses `BACKEND_URL=http://localhost:8000` locally. In Vercel, the root routing rule sends `/api/*` directly to the same project's Python function, so no backend URL is required.
 
-```text
-http://localhost:3000/api/cases
-```
+## Persistence warning
+
+The current backend uses SQLite and local filesystem uploads. Vercel functions have ephemeral storage. Use a hosted database and object storage for production persistence.
